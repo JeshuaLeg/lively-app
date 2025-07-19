@@ -16,8 +16,10 @@ final firestoreServiceProvider = Provider<FirestoreService>((ref) {
 
 // Current Firebase User Stream
 final authStateProvider = StreamProvider<User?>((ref) {
-  final authService = ref.watch(authServiceProvider);
-  return authService.authStateChanges;
+  // Temporarily return null user when Firebase is not initialized
+  return Stream.value(null);
+  // final authService = ref.watch(authServiceProvider);
+  // return authService.authStateChanges;
 });
 
 // Current User Model Provider
@@ -72,23 +74,23 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     }
   }
 
-  Future<void> signInWithGoogle() async {
-    state = const AsyncValue.loading();
-    try {
-      await _authService.signInWithGoogle();
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-    }
-  }
+  // Future<void> signInWithGoogle() async {
+  //   state = const AsyncValue.loading();
+  //   try {
+  //     await _authService.signInWithGoogle();
+  //   } catch (e) {
+  //     state = AsyncValue.error(e, StackTrace.current);
+  //   }
+  // }
 
-  Future<void> signInWithApple() async {
-    state = const AsyncValue.loading();
-    try {
-      await _authService.signInWithApple();
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-    }
-  }
+  // Future<void> signInWithApple() async {
+  //   state = const AsyncValue.loading();
+  //   try {
+  //     await _authService.signInWithApple();
+  //   } catch (e) {
+  //     state = AsyncValue.error(e, StackTrace.current);
+  //   }
+  // }
 
   Future<void> signOut() async {
     state = const AsyncValue.loading();

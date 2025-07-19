@@ -2,7 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:timezone/timezone.dart' as tz;
 
 class FirebaseService {
   static final FirebaseService _instance = FirebaseService._internal();
@@ -11,11 +12,11 @@ class FirebaseService {
 
   late FirebaseAnalytics _analytics;
   late FirebaseMessaging _messaging;
-  late FlutterLocalNotificationsPlugin _localNotifications;
+  // late FlutterLocalNotificationsPlugin _localNotifications;
 
   FirebaseAnalytics get analytics => _analytics;
   FirebaseMessaging get messaging => _messaging;
-  FlutterLocalNotificationsPlugin get localNotifications => _localNotifications;
+  // FlutterLocalNotificationsPlugin get localNotifications => _localNotifications;
 
   Future<void> initialize() async {
     try {
@@ -33,8 +34,8 @@ class FirebaseService {
       await _initializeMessaging();
 
       // Initialize Local Notifications
-      _localNotifications = FlutterLocalNotificationsPlugin();
-      await _initializeLocalNotifications();
+      // _localNotifications = FlutterLocalNotificationsPlugin();
+      // await _initializeLocalNotifications();
 
       if (kDebugMode) {
         print('Firebase initialized successfully');
@@ -106,7 +107,7 @@ class FirebaseService {
       if (kDebugMode) {
         print('Received foreground message: ${message.notification?.title}');
       }
-      _showLocalNotification(message);
+      // _showLocalNotification(message);
     });
 
     // Handle message taps
@@ -124,63 +125,63 @@ class FirebaseService {
     }
   }
 
-  Future<void> _initializeLocalNotifications() async {
-    const AndroidInitializationSettings androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
+  // Future<void> _initializeLocalNotifications() async {
+  //   const AndroidInitializationSettings androidSettings = AndroidInitializationSettings(
+  //     '@mipmap/ic_launcher',
+  //   );
 
-    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+  //   const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+  //     requestAlertPermission: true,
+  //     requestBadgePermission: true,
+  //     requestSoundPermission: true,
+  //   );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-      macOS: iosSettings,
-    );
+  //   const InitializationSettings initializationSettings = InitializationSettings(
+  //     android: androidSettings,
+  //     iOS: iosSettings,
+  //     macOS: iosSettings,
+  //   );
 
-    await _localNotifications.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        if (kDebugMode) {
-          print('Local notification tapped: ${response.payload}');
-        }
-      },
-    );
-  }
+  //   await _localNotifications.initialize(
+  //     initializationSettings,
+  //     onDidReceiveNotificationResponse: (NotificationResponse response) {
+  //       if (kDebugMode) {
+  //         print('Local notification tapped: ${response.payload}');
+  //       }
+  //     },
+  //   );
+  // }
 
-  Future<void> _showLocalNotification(RemoteMessage message) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'focus_channel',
-      'Focus Notifications',
-      channelDescription: 'Notifications for focus sessions and reminders',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-    );
+  // Future<void> _showLocalNotification(RemoteMessage message) async {
+  //   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+  //     'focus_channel',
+  //     'Focus Notifications',
+  //     channelDescription: 'Notifications for focus sessions and reminders',
+  //     importance: Importance.high,
+  //     priority: Priority.high,
+  //     showWhen: true,
+  //   );
 
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+  //   const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+  //     presentAlert: true,
+  //     presentBadge: true,
+  //     presentSound: true,
+  //   );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-      macOS: iosDetails,
-    );
+  //   const NotificationDetails notificationDetails = NotificationDetails(
+  //     android: androidDetails,
+  //     iOS: iosDetails,
+  //     macOS: iosDetails,
+  //   );
 
-    await _localNotifications.show(
-      message.hashCode,
-      message.notification?.title,
-      message.notification?.body,
-      notificationDetails,
-      payload: message.data['payload'],
-    );
-  }
+  //   await _localNotifications.show(
+  //     message.hashCode,
+  //     message.notification?.title,
+  //     message.notification?.body,
+  //     notificationDetails,
+  //     payload: message.data['payload'],
+  //   );
+  // }
 
   void _handleMessageTap(RemoteMessage message) {
     // Handle notification tap navigation
@@ -222,52 +223,52 @@ class FirebaseService {
     await _messaging.unsubscribeFromTopic(topic);
   }
 
-  Future<void> scheduleLocalNotification({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime scheduledTime,
-    String? payload,
-  }) async {
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'scheduled_channel',
-      'Scheduled Notifications',
-      channelDescription: 'Scheduled notifications for focus sessions',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-    );
+  // Future<void> scheduleLocalNotification({
+  //   required int id,
+  //   required String title,
+  //   required String body,
+  //   required DateTime scheduledTime,
+  //   String? payload,
+  // }) async {
+  //   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+  //     'scheduled_channel',
+  //     'Scheduled Notifications',
+  //     channelDescription: 'Scheduled notifications for focus sessions',
+  //     importance: Importance.high,
+  //     priority: Priority.high,
+  //     showWhen: true,
+  //   );
 
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+  //   const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+  //     presentAlert: true,
+  //     presentBadge: true,
+  //     presentSound: true,
+  //   );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-      macOS: iosDetails,
-    );
+  //   const NotificationDetails notificationDetails = NotificationDetails(
+  //     android: androidDetails,
+  //     iOS: iosDetails,
+  //     macOS: iosDetails,
+  //   );
 
-    await _localNotifications.zonedSchedule(
-      id,
-      title,
-      body,
-      scheduledTime,
-      notificationDetails,
-      payload: payload,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
-  }
+  //   await _localNotifications.zonedSchedule(
+  //     id,
+  //     title,
+  //     body,
+  //     tz.TZDateTime.from(scheduledTime, tz.local),
+  //     notificationDetails,
+  //     payload: payload,
+  //     uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+  //   );
+  // }
 
-  Future<void> cancelNotification(int id) async {
-    await _localNotifications.cancel(id);
-  }
+  // Future<void> cancelNotification(int id) async {
+  //   await _localNotifications.cancel(id);
+  // }
 
-  Future<void> cancelAllNotifications() async {
-    await _localNotifications.cancelAll();
-  }
+  // Future<void> cancelAllNotifications() async {
+  //   await _localNotifications.cancelAll();
+  // }
 }
 
 // Background message handler

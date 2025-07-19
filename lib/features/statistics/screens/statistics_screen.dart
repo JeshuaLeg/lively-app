@@ -261,9 +261,9 @@ class StatisticsScreen extends ConsumerWidget {
           color: AppTheme.primaryColor,
         ),
       ),
-      title: Text(app['name']!),
+      title: Text(app['name']! as String),
       trailing: Text(
-        app['time']!,
+        app['time']! as String,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w600,
         ),

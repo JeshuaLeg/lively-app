@@ -88,7 +88,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return authState.when(
         data: (user) {
           // If user is on splash screen, redirect based on auth state
-          if (state.location == AppConstants.splashRoute) {
+          if (state.uri.toString() == AppConstants.splashRoute) {
             if (user != null) {
               return AppConstants.homeRoute;
             } else {
@@ -97,12 +97,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           }
           
           // Protect authenticated routes
-          if (user == null && _protectedRoutes.contains(state.location)) {
+          if (user == null && _protectedRoutes.contains(state.uri.toString())) {
             return AppConstants.authRoute;
           }
           
           // Redirect authenticated users away from auth screens
-          if (user != null && _authRoutes.contains(state.location)) {
+          if (user != null && _authRoutes.contains(state.uri.toString())) {
             return AppConstants.homeRoute;
           }
           
@@ -175,7 +175,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppConstants.sessionTimerRoute,
         name: 'session-timer',
         pageBuilder: (context, state) {
-          final sessionId = state.queryParameters['sessionId'] ?? '';
+          final sessionId = state.uri.queryParameters['sessionId'] ?? '';
           return SlidePage(
             child: SessionTimerScreen(sessionId: sessionId),
             name: 'session-timer',
@@ -297,7 +297,7 @@ final routeInformationParserProvider = Provider<RouteInformationParser<Object>>(
 // Current Route Provider
 final currentRouteProvider = Provider<String>((ref) {
   final router = ref.watch(appRouterProvider);
-  return router.location;
+  return router.routeInformationProvider.value.uri.toString();
 });
 
 // Can Pop Provider

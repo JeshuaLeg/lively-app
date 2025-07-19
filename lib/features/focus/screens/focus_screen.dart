@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/navigation/app_router.dart';
 
 class FocusScreen extends ConsumerWidget {
   const FocusScreen({Key? key}) : super(key: key);
@@ -315,8 +316,8 @@ class FocusScreen extends ConsumerWidget {
             color: session['color'] as Color,
           ),
         ),
-        title: Text(session['title']!),
-        subtitle: Text(session['time']!),
+        title: Text(session['title']! as String),
+        subtitle: Text(session['time']! as String),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
@@ -324,7 +325,7 @@ class FocusScreen extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            session['status']!,
+            session['status']! as String,
             style: TextStyle(
               color: session['color'] as Color,
               fontSize: 12,

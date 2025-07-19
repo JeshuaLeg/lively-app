@@ -25,6 +25,8 @@ enum DifficultyLevel {
 
 @freezed
 class FocusSessionModel with _$FocusSessionModel {
+  const FocusSessionModel._();
+  
   const factory FocusSessionModel({
     required String id,
     required String userId,

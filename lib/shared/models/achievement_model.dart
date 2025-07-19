@@ -22,6 +22,8 @@ enum AchievementRarity {
 
 @freezed
 class AchievementModel with _$AchievementModel {
+  const AchievementModel._();
+  
   const factory AchievementModel({
     required String id,
     required String title,
@@ -88,6 +90,8 @@ class AchievementModel with _$AchievementModel {
 
 @freezed
 class UserAchievementModel with _$UserAchievementModel {
+  const UserAchievementModel._();
+  
   const factory UserAchievementModel({
     required String id,
     required String userId,

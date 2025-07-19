@@ -164,7 +164,7 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -188,8 +188,7 @@ class AppTheme {
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarTheme(
-        backgroundColor: surfaceColor,
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         selectedItemColor: primaryColor,
         unselectedItemColor: textSecondary,
         type: BottomNavigationBarType.fixed,
@@ -311,7 +310,7 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -335,8 +334,7 @@ class AppTheme {
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarTheme(
-        backgroundColor: darkSurfaceColor,
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         selectedItemColor: darkPrimaryColor,
         unselectedItemColor: darkTextSecondary,
         type: BottomNavigationBarType.fixed,

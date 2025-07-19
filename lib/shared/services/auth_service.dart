@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -12,7 +12,7 @@ class AuthService {
   AuthService._internal();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   User? get currentUser => _auth.currentUser;
   String? get currentUserId => _auth.currentUser?.uid;
@@ -58,65 +58,65 @@ class AuthService {
   }
 
   // Google Sign In
-  Future<UserCredential?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        return null; // User cancelled the sign-in
-      }
+  // Future<UserCredential?> signInWithGoogle() async {
+  //   try {
+  //     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+  //     if (googleUser == null) {
+  //       return null; // User cancelled the sign-in
+  //     }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+  //     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+  //     final credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
-      return userCredential;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Google sign in error: $e');
-      }
-      throw AuthException('Google sign in failed');
-    }
-  }
+  //     final UserCredential userCredential = await _auth.signInWithCredential(credential);
+  //     return userCredential;
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print('Google sign in error: $e');
+  //     }
+  //     throw AuthException('Google sign in failed');
+  //   }
+  // }
 
   // Apple Sign In
-  Future<UserCredential?> signInWithApple() async {
-    try {
-      // Generate nonce for security
-      final rawNonce = _generateNonce();
-      final nonce = _sha256ofString(rawNonce);
+  // Future<UserCredential?> signInWithApple() async {
+  //   try {
+  //     // Generate nonce for security
+  //     final rawNonce = _generateNonce();
+  //     final nonce = _sha256ofString(rawNonce);
 
-      final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-        nonce: nonce,
-      );
+  //     final appleCredential = await SignInWithApple.getAppleIDCredential(
+  //       scopes: [
+  //         AppleIDAuthorizationScopes.email,
+  //         AppleIDAuthorizationScopes.fullName,
+  //       ],
+  //       nonce: nonce,
+  //     );
 
-      final oauthCredential = OAuthProvider('apple.com').credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-      );
+  //     final oauthCredential = OAuthProvider('apple.com').credential(
+  //       idToken: appleCredential.identityToken,
+  //       rawNonce: rawNonce,
+  //     );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(oauthCredential);
+  //     final UserCredential userCredential = await _auth.signInWithCredential(oauthCredential);
       
-      // Update display name if available
-      if (appleCredential.givenName != null || appleCredential.familyName != null) {
-        final displayName = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
-        await userCredential.user?.updateDisplayName(displayName);
-      }
+  //     // Update display name if available
+  //     if (appleCredential.givenName != null || appleCredential.familyName != null) {
+  //       final displayName = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
+  //       await userCredential.user?.updateDisplayName(displayName);
+  //     }
 
-      return userCredential;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Apple sign in error: $e');
-      }
-      throw AuthException('Apple sign in failed');
-    }
-  }
+  //     return userCredential;
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print('Apple sign in error: $e');
+  //     }
+  //     throw AuthException('Apple sign in failed');
+  //   }
+  // }
 
   // Phone Authentication
   Future<void> verifyPhoneNumber({
@@ -247,7 +247,7 @@ class AuthService {
   // Sign Out
   Future<void> signOut() async {
     try {
-      await _googleSignIn.signOut();
+      // await _googleSignIn.signOut();
       await _auth.signOut();
     } catch (e) {
       if (kDebugMode) {

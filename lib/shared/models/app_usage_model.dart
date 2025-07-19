@@ -5,6 +5,8 @@ part 'app_usage_model.g.dart';
 
 @freezed
 class AppUsageModel with _$AppUsageModel {
+  const AppUsageModel._();
+  
   const factory AppUsageModel({
     required String id,
     required String userId,
@@ -61,6 +63,8 @@ class UsageSession with _$UsageSession {
 
 @freezed
 class DailyUsageStats with _$DailyUsageStats {
+  const DailyUsageStats._();
+  
   const factory DailyUsageStats({
     required DateTime date,
     required String userId,
