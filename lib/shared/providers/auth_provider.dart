@@ -16,10 +16,8 @@ final firestoreServiceProvider = Provider<FirestoreService>((ref) {
 
 // Current Firebase User Stream
 final authStateProvider = StreamProvider<User?>((ref) {
-  // Temporarily return null user when Firebase is not initialized
-  return Stream.value(null);
-  // final authService = ref.watch(authServiceProvider);
-  // return authService.authStateChanges;
+  final authService = ref.watch(authServiceProvider);
+  return authService.authStateChanges;
 });
 
 // Current User Model Provider
@@ -42,13 +40,14 @@ final currentUserProvider = StreamProvider<UserModel?>((ref) {
 
 // Auth State Notifier
 class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
-  AuthNotifier(this._authService) : super(const AsyncValue.loading()) {
+  AuthNotifier(this._authService, this._firestoreService) : super(const AsyncValue.loading()) {
     _authService.authStateChanges.listen((user) {
       state = AsyncValue.data(user);
     });
   }
 
   final AuthService _authService;
+  final FirestoreService _firestoreService;
 
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     state = const AsyncValue.loading();
@@ -65,10 +64,26 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<void> createUserWithEmailAndPassword(String email, String password) async {
     state = const AsyncValue.loading();
     try {
-      await _authService.createUserWithEmailAndPassword(
+      final userCredential = await _authService.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      
+      // Create user document in Firestore
+      if (userCredential?.user != null) {
+        final user = userCredential!.user!;
+        final userModel = UserModel(
+          id: user.uid,
+          email: user.email ?? email,
+          displayName: user.displayName,
+          photoUrl: user.photoURL,
+          isEmailVerified: user.emailVerified,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        
+        await _firestoreService.createUser(userModel);
+      }
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }
@@ -121,7 +136,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
 // Auth Notifier Provider
 final authNotifierProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
   final authService = ref.watch(authServiceProvider);
-  return AuthNotifier(authService);
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return AuthNotifier(authService, firestoreService);
 });
 
 // User Management Notifier

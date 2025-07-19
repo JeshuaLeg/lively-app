@@ -82,7 +82,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: AppConstants.splashRoute,
     redirect: (context, state) {
       final authState = ref.watch(authStateProvider);
-      final isLoggedIn = ref.watch(isLoggedInProvider);
       
       // Handle authentication redirect
       return authState.when(

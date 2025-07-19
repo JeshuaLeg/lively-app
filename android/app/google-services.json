@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "888536984443",
+    "project_id": "lively-f55f5",
+    "storage_bucket": "lively-f55f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888536984443:android:f10f49cfa11372c699ebde",
+        "android_client_info": {
+          "package_name": "com.example.lively_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888536984443-a46e9840ufnk9pb1cviboh7l3afi4fii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkj3VG0qd_lGJ0JDT0_tPS7baD_QMed2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888536984443-a46e9840ufnk9pb1cviboh7l3afi4fii.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "888536984443-h3l56l80auu88h7ucag0udp4lbcd524f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lively.lively"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888536984443:android:92f4e7b7b0c6153599ebde",
+        "android_client_info": {
+          "package_name": "com.lively.lively"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888536984443-4v12n4905l0lfqs4i6aif99e1a3b657l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lively.lively",
+            "certificate_hash": "6ffe1bf32818ac35feec83c4b03ffdd3a4438452"
+          }
+        },
+        {
+          "client_id": "888536984443-a46e9840ufnk9pb1cviboh7l3afi4fii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkj3VG0qd_lGJ0JDT0_tPS7baD_QMed2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888536984443-a46e9840ufnk9pb1cviboh7l3afi4fii.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "888536984443-h3l56l80auu88h7ucag0udp4lbcd524f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lively.lively"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

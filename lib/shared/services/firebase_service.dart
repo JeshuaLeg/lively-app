@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import '../../firebase_options.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:timezone/timezone.dart' as tz;
 
@@ -20,9 +21,9 @@ class FirebaseService {
 
   Future<void> initialize() async {
     try {
-      // Initialize Firebase
+      // Initialize Firebase with real configuration
       await Firebase.initializeApp(
-        options: _getFirebaseOptions(),
+        options: DefaultFirebaseOptions.currentPlatform,
       );
 
       // Initialize Analytics
@@ -48,44 +49,7 @@ class FirebaseService {
     }
   }
 
-  FirebaseOptions _getFirebaseOptions() {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return const FirebaseOptions(
-        apiKey: 'your-android-api-key',
-        appId: 'your-android-app-id',
-        messagingSenderId: 'your-messaging-sender-id',
-        projectId: 'your-project-id',
-        storageBucket: 'your-project-id.appspot.com',
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return const FirebaseOptions(
-        apiKey: 'your-ios-api-key',
-        appId: 'your-ios-app-id',
-        messagingSenderId: 'your-messaging-sender-id',
-        projectId: 'your-project-id',
-        storageBucket: 'your-project-id.appspot.com',
-        iosBundleId: 'com.lively.app',
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.macOS) {
-      return const FirebaseOptions(
-        apiKey: 'your-macos-api-key',
-        appId: 'your-macos-app-id',
-        messagingSenderId: 'your-messaging-sender-id',
-        projectId: 'your-project-id',
-        storageBucket: 'your-project-id.appspot.com',
-        iosBundleId: 'com.lively.app',
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.windows) {
-      return const FirebaseOptions(
-        apiKey: 'your-windows-api-key',
-        appId: 'your-windows-app-id',
-        messagingSenderId: 'your-messaging-sender-id',
-        projectId: 'your-project-id',
-        storageBucket: 'your-project-id.appspot.com',
-      );
-    }
-    throw UnsupportedError('Platform not supported');
-  }
+
 
   Future<void> _initializeMessaging() async {
     // Request permission for notifications

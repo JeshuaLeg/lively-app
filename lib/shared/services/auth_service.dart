@@ -244,7 +244,7 @@ class AuthService {
     }
   }
 
-  // Sign Out
+    // Sign Out
   Future<void> signOut() async {
     try {
       // await _googleSignIn.signOut();
