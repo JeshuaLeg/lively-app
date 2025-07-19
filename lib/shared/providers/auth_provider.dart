@@ -89,14 +89,14 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     }
   }
 
-  // Future<void> signInWithGoogle() async {
-  //   state = const AsyncValue.loading();
-  //   try {
-  //     await _authService.signInWithGoogle();
-  //   } catch (e) {
-  //     state = AsyncValue.error(e, StackTrace.current);
-  //   }
-  // }
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+    try {
+      await _authService.signInWithGoogle();
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
 
   // Future<void> signInWithApple() async {
   //   state = const AsyncValue.loading();

@@ -8,7 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
 import 'shared/services/firebase_service.dart';
-// import 'shared/services/auth_service.dart';
+import 'shared/services/auth_service.dart';
 import 'shared/providers/auth_provider.dart';
 import 'shared/providers/theme_provider.dart';
 import 'core/navigation/app_router.dart';

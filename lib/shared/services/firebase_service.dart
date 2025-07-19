@@ -12,11 +12,11 @@ class FirebaseService {
   FirebaseService._internal();
 
   late FirebaseAnalytics _analytics;
-  late FirebaseMessaging _messaging;
+  FirebaseMessaging? _messaging;
   // late FlutterLocalNotificationsPlugin _localNotifications;
 
   FirebaseAnalytics get analytics => _analytics;
-  FirebaseMessaging get messaging => _messaging;
+  FirebaseMessaging? get messaging => _messaging;
   // FlutterLocalNotificationsPlugin get localNotifications => _localNotifications;
 
   Future<void> initialize() async {
@@ -30,9 +30,17 @@ class FirebaseService {
       _analytics = FirebaseAnalytics.instance;
       await _analytics.setAnalyticsCollectionEnabled(true);
 
-      // Initialize Messaging
-      _messaging = FirebaseMessaging.instance;
-      await _initializeMessaging();
+      // Initialize Messaging (with error handling for emulator)
+      try {
+        _messaging = FirebaseMessaging.instance;
+        await _initializeMessaging();
+      } catch (e) {
+        if (kDebugMode) {
+          print('Firebase Messaging initialization failed (likely due to emulator): $e');
+          print('Continuing without messaging features...');
+        }
+        // Continue without messaging - this is acceptable for development/testing
+      }
 
       // Initialize Local Notifications
       // _localNotifications = FlutterLocalNotificationsPlugin();
@@ -52,8 +60,10 @@ class FirebaseService {
 
 
   Future<void> _initializeMessaging() async {
+    if (_messaging == null) return;
+    
     // Request permission for notifications
-    await _messaging.requestPermission(
+    await _messaging!.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -82,10 +92,17 @@ class FirebaseService {
       _handleMessageTap(message);
     });
 
-    // Get FCM token
-    String? token = await _messaging.getToken();
-    if (kDebugMode) {
-      print('FCM Token: $token');
+    // Get FCM token (with error handling for emulator)
+    try {
+      String? token = await _messaging!.getToken();
+      if (kDebugMode) {
+        print('FCM Token: $token');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to get FCM token (expected in emulator): $e');
+      }
+      // This is expected to fail in emulator without Google Play Services
     }
   }
 
@@ -176,15 +193,52 @@ class FirebaseService {
   }
 
   Future<String?> getFCMToken() async {
-    return await _messaging.getToken();
+    if (_messaging == null) {
+      if (kDebugMode) {
+        print('Firebase Messaging not available');
+      }
+      return null;
+    }
+    try {
+      return await _messaging!.getToken();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to get FCM token: $e');
+      }
+      return null;
+    }
   }
 
   Future<void> subscribeToTopic(String topic) async {
-    await _messaging.subscribeToTopic(topic);
+    if (_messaging == null) {
+      if (kDebugMode) {
+        print('Firebase Messaging not available - cannot subscribe to topic: $topic');
+      }
+      return;
+    }
+    try {
+      await _messaging!.subscribeToTopic(topic);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to subscribe to topic $topic: $e');
+      }
+    }
   }
 
   Future<void> unsubscribeFromTopic(String topic) async {
-    await _messaging.unsubscribeFromTopic(topic);
+    if (_messaging == null) {
+      if (kDebugMode) {
+        print('Firebase Messaging not available - cannot unsubscribe from topic: $topic');
+      }
+      return;
+    }
+    try {
+      await _messaging!.unsubscribeFromTopic(topic);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to unsubscribe from topic $topic: $e');
+      }
+    }
   }
 
   // Future<void> scheduleLocalNotification({
