@@ -76,6 +76,99 @@ class FadePage extends CustomTransitionPage {
   }
 }
 
+// Shell for bottom navigation (Opal-style main navigation)
+class MainShell extends ConsumerWidget {
+  final Widget child;
+  final int selectedIndex;
+
+  const MainShell({
+    required this.child,
+    required this.selectedIndex,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      body: child,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF1A1D3A).withOpacity(0.95),
+              const Color(0xFF0A0E27),
+            ],
+          ),
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          currentIndex: selectedIndex,
+          selectedItemColor: const Color(0xFF4FC3F7),
+          unselectedItemColor: const Color(0xFF8E8E93),
+          selectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                context.go(AppConstants.homeRoute);
+                break;
+              case 1:
+                context.go(AppConstants.blocksRoute);
+                break;
+              case 2:
+                context.go(AppConstants.statisticsRoute);
+                break;
+              case 3:
+                context.go(AppConstants.achievementsRoute);
+                break;
+              case 4:
+                context.go(AppConstants.profileRoute);
+                break;
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded, size: 24),
+              activeIcon: Icon(Icons.home_rounded, size: 26),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.block_rounded, size: 24),
+              activeIcon: Icon(Icons.block_rounded, size: 26),
+              label: 'Blocks',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart_rounded, size: 24),
+              activeIcon: Icon(Icons.bar_chart_rounded, size: 26),
+              label: 'Statistics',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_events_rounded, size: 24),
+              activeIcon: Icon(Icons.emoji_events_rounded, size: 26),
+              label: 'Achievements',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded, size: 24),
+              activeIcon: Icon(Icons.person_rounded, size: 26),
+              label: 'Profile',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // App Router Configuration
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -142,25 +235,83 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       
-      // Main App Routes
-      GoRoute(
-        path: AppConstants.homeRoute,
-        name: 'home',
-        pageBuilder: (context, state) => const FadePage(
-          child: HomeScreen(),
-          name: 'home',
-        ),
+      // Main Shell Routes (with bottom navigation)
+      ShellRoute(
+        builder: (context, state, child) {
+          final location = state.uri.toString();
+          int selectedIndex = 0;
+          
+          if (location.startsWith(AppConstants.homeRoute)) {
+            selectedIndex = 0;
+          } else if (location.startsWith(AppConstants.blocksRoute)) {
+            selectedIndex = 1;
+          } else if (location.startsWith(AppConstants.statisticsRoute)) {
+            selectedIndex = 2;
+          } else if (location.startsWith(AppConstants.achievementsRoute)) {
+            selectedIndex = 3;
+          } else if (location.startsWith(AppConstants.profileRoute)) {
+            selectedIndex = 4;
+          }
+          
+          return MainShell(
+            selectedIndex: selectedIndex,
+            child: child,
+          );
+        },
+        routes: [
+          // Home Route
+          GoRoute(
+            path: AppConstants.homeRoute,
+            name: 'home',
+            pageBuilder: (context, state) => const FadePage(
+              child: HomeScreen(),
+              name: 'home',
+            ),
+          ),
+          
+          // Blocks Route (Focus Sessions & App Blocking)
+          GoRoute(
+            path: AppConstants.blocksRoute,
+            name: 'blocks',
+            pageBuilder: (context, state) => const FadePage(
+              child: FocusScreen(), // This will be redesigned to match Opal's blocks screen
+              name: 'blocks',
+            ),
+          ),
+          
+          // Statistics Route
+          GoRoute(
+            path: AppConstants.statisticsRoute,
+            name: 'statistics',
+            pageBuilder: (context, state) => const FadePage(
+              child: StatisticsScreen(),
+              name: 'statistics',
+            ),
+          ),
+          
+          // Achievements Route
+          GoRoute(
+            path: AppConstants.achievementsRoute,
+            name: 'achievements',
+            pageBuilder: (context, state) => const FadePage(
+              child: AchievementsScreen(),
+              name: 'achievements',
+            ),
+          ),
+          
+          // Profile Route
+          GoRoute(
+            path: AppConstants.profileRoute,
+            name: 'profile',
+            pageBuilder: (context, state) => const FadePage(
+              child: ProfileScreen(),
+              name: 'profile',
+            ),
+          ),
+        ],
       ),
       
-      GoRoute(
-        path: AppConstants.focusRoute,
-        name: 'focus',
-        pageBuilder: (context, state) => const SlidePage(
-          child: FocusScreen(),
-          name: 'focus',
-        ),
-      ),
-      
+      // Modal Routes (without bottom navigation)
       GoRoute(
         path: AppConstants.createSessionRoute,
         name: 'create-session',
@@ -183,38 +334,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       
       GoRoute(
-        path: AppConstants.statisticsRoute,
-        name: 'statistics',
-        pageBuilder: (context, state) => const SlidePage(
-          child: StatisticsScreen(),
-          name: 'statistics',
-        ),
-      ),
-      
-      GoRoute(
         path: AppConstants.settingsRoute,
         name: 'settings',
         pageBuilder: (context, state) => const SlidePage(
           child: SettingsScreen(),
           name: 'settings',
-        ),
-      ),
-      
-      GoRoute(
-        path: AppConstants.profileRoute,
-        name: 'profile',
-        pageBuilder: (context, state) => const SlidePage(
-          child: ProfileScreen(),
-          name: 'profile',
-        ),
-      ),
-      
-      GoRoute(
-        path: AppConstants.achievementsRoute,
-        name: 'achievements',
-        pageBuilder: (context, state) => const SlidePage(
-          child: AchievementsScreen(),
-          name: 'achievements',
         ),
       ),
     ],
@@ -230,7 +354,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 // Helper lists for route protection
 final _protectedRoutes = [
   AppConstants.homeRoute,
-  AppConstants.focusRoute,
+  AppConstants.blocksRoute,
   AppConstants.createSessionRoute,
   AppConstants.sessionTimerRoute,
   AppConstants.statisticsRoute,
@@ -263,7 +387,7 @@ extension NavigationExtension on BuildContext {
   void goToHome() => go(AppConstants.homeRoute);
   void goToAuth() => go(AppConstants.authRoute);
   void goToOnboarding() => go(AppConstants.onboardingRoute);
-  void goToFocus() => go(AppConstants.focusRoute);
+  void goToBlocks() => go(AppConstants.blocksRoute);
   void goToStatistics() => go(AppConstants.statisticsRoute);
   void goToSettings() => go(AppConstants.settingsRoute);
   void goToProfile() => go(AppConstants.profileRoute);
@@ -334,12 +458,13 @@ final navigationHistoryProvider = StateNotifierProvider<NavigationHistoryNotifie
 // Bottom Navigation Index Provider
 final bottomNavigationIndexProvider = StateProvider<int>((ref) => 0);
 
-// Bottom Navigation Routes
+// Bottom Navigation Routes (Updated for Opal-style navigation)
 final bottomNavigationRoutes = [
   AppConstants.homeRoute,
-  AppConstants.focusRoute,
+  AppConstants.blocksRoute,
   AppConstants.statisticsRoute,
-  AppConstants.settingsRoute,
+  AppConstants.achievementsRoute,
+  AppConstants.profileRoute,
 ];
 
 // Get Bottom Navigation Index from Route
@@ -351,3 +476,51 @@ int getBottomNavigationIndex(String route) {
 String getRouteFromBottomNavigationIndex(int index) {
   return bottomNavigationRoutes[index.clamp(0, bottomNavigationRoutes.length - 1)];
 }
+
+// Current Tab Provider
+final currentTabProvider = Provider<int>((ref) {
+  final currentRoute = ref.watch(currentRouteProvider);
+  return getBottomNavigationIndex(currentRoute);
+});
+
+// Tab Change Notifier
+class TabNotifier extends StateNotifier<int> {
+  TabNotifier() : super(0);
+
+  void changeTab(int index) {
+    state = index;
+  }
+}
+
+final tabProvider = StateNotifierProvider<TabNotifier, int>((ref) {
+  return TabNotifier();
+});
+
+// Navigation State Provider
+class NavigationState {
+  final String currentRoute;
+  final int currentTab;
+  final bool canGoBack;
+  final List<String> history;
+
+  const NavigationState({
+    required this.currentRoute,
+    required this.currentTab,
+    required this.canGoBack,
+    required this.history,
+  });
+}
+
+final navigationStateProvider = Provider<NavigationState>((ref) {
+  final currentRoute = ref.watch(currentRouteProvider);
+  final currentTab = ref.watch(currentTabProvider);
+  final canGoBack = ref.watch(canPopProvider);
+  final history = ref.watch(navigationHistoryProvider);
+
+  return NavigationState(
+    currentRoute: currentRoute,
+    currentTab: currentTab,
+    canGoBack: canGoBack,
+    history: history,
+  );
+});

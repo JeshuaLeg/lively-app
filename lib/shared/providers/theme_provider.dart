@@ -5,13 +5,13 @@ import '../../core/constants/app_constants.dart';
 
 // Theme Mode State Notifier
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  ThemeModeNotifier() : super(ThemeMode.light) {
+  ThemeModeNotifier() : super(ThemeMode.dark) {  // Default to dark mode to match Opal
     _loadThemeMode();
   }
 
   Future<void> _loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeString = prefs.getString(AppConstants.themeKey) ?? 'light';
+    final themeString = prefs.getString(AppConstants.themeKey) ?? 'dark';  // Default to dark
     
     switch (themeString) {
       case 'light':
@@ -24,7 +24,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
         state = ThemeMode.system;
         break;
       default:
-        state = ThemeMode.light;
+        state = ThemeMode.dark;  // Default to dark
     }
   }
 
@@ -66,7 +66,7 @@ final isDarkModeProvider = Provider<bool>((ref) {
   
   if (themeMode == ThemeMode.system) {
     // Get system brightness
-    final brightness = WidgetsBinding.instance.window.platformBrightness;
+    final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
     return brightness == Brightness.dark;
   }
   
@@ -103,103 +103,113 @@ final themeAnimationProvider = StateNotifierProvider<ThemeAnimationNotifier, boo
   return ThemeAnimationNotifier();
 });
 
-// Theme Colors Provider
-final themeColorsProvider = Provider<Map<String, Color>>((ref) {
-  final isDark = ref.watch(isDarkModeProvider);
-  
-  if (isDark) {
-    return {
-      'primary': const Color(0xFF8B93FF),
-      'secondary': const Color(0xFF9B59B6),
-      'accent': const Color(0xFFFF6B9D),
-      'background': const Color(0xFF1A1A1A),
-      'surface': const Color(0xFF2D2D2D),
-      'error': const Color(0xFFE74C3C),
-      'success': const Color(0xFF2ECC71),
-      'warning': const Color(0xFFF39C12),
-      'textPrimary': const Color(0xFFECF0F1),
-      'textSecondary': const Color(0xFFBDC3C7),
-      'textTertiary': const Color(0xFF7F8C8D),
-    };
-  } else {
-    return {
-      'primary': const Color(0xFF6B73FF),
-      'secondary': const Color(0xFF9B59B6),
-      'accent': const Color(0xFFFF6B9D),
-      'background': const Color(0xFFF8F9FA),
-      'surface': const Color(0xFFFFFFFF),
-      'error': const Color(0xFFE74C3C),
-      'success': const Color(0xFF2ECC71),
-      'warning': const Color(0xFFF39C12),
-      'textPrimary': const Color(0xFF2C3E50),
-      'textSecondary': const Color(0xFF7F8C8D),
-      'textTertiary': const Color(0xFFBDC3C7),
-    };
-  }
-});
-
-// Pastel Colors Provider
-final pastelColorsProvider = Provider<Map<String, Color>>((ref) {
-  return {
-    'lightPurple': const Color(0xFFF3F0FF),
-    'lightBlue': const Color(0xFFE8F4FD),
-    'lightPink': const Color(0xFFFFE8F1),
-    'lightGreen': const Color(0xFFE8F5E8),
-    'lightOrange': const Color(0xFFFFF2E8),
-    'lightYellow': const Color(0xFFFFFBE8),
-    'lightRed': const Color(0xFFFFE8E8),
-    'lightGray': const Color(0xFFF5F5F5),
-  };
-});
-
-// Gradient Provider
-final gradientProvider = Provider<List<LinearGradient>>((ref) {
-  return [
-    const LinearGradient(
-      colors: [Color(0xFF6B73FF), Color(0xFF9B59B6)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    const LinearGradient(
-      colors: [Color(0xFF9B59B6), Color(0xFFFF6B9D)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    const LinearGradient(
-      colors: [Color(0xFFFF6B9D), Color(0xFFF39C12)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    const LinearGradient(
-      colors: [Color(0xFF2ECC71), Color(0xFF3498DB)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    const LinearGradient(
-      colors: [Color(0xFF3498DB), Color(0xFF6B73FF)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-  ];
-});
-
-// Theme Utility Functions
-extension ThemeExtension on WidgetRef {
-  ThemeMode get themeMode => watch(themeModeProvider);
+// Theme Extensions for easier access in widgets
+extension WidgetRefThemeExtension on WidgetRef {
   bool get isDarkMode => watch(isDarkModeProvider);
-  Map<String, Color> get themeColors => watch(themeColorsProvider);
-  Map<String, Color> get pastelColors => watch(pastelColorsProvider);
-  List<LinearGradient> get gradients => watch(gradientProvider);
-  
-  Color getThemeColor(String colorName) {
-    return themeColors[colorName] ?? Colors.grey;
+  String get currentThemeString => watch(currentThemeStringProvider);
+  ThemeMode get themeMode => watch(themeModeProvider);
+}
+
+extension BuildContextThemeExtension on BuildContext {
+  bool get isDarkMode {
+    final brightness = Theme.of(this).brightness;
+    return brightness == Brightness.dark;
   }
   
-  Color getPastelColor(String colorName) {
-    return pastelColors[colorName] ?? Colors.grey.shade100;
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
+  TextTheme get textTheme => Theme.of(this).textTheme;
+}
+
+// Color Preference Providers for customization
+class ColorPreferencesNotifier extends StateNotifier<Map<String, Color>> {
+  ColorPreferencesNotifier() : super({});
+
+  Future<void> setAccentColor(Color color) async {
+    state = {...state, 'accent': color};
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('accent_color', color.value);
+  }
+
+  Future<void> loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accentValue = prefs.getInt('accent_color');
+    
+    if (accentValue != null) {
+      state = {...state, 'accent': Color(accentValue)};
+    }
+  }
+}
+
+final colorPreferencesProvider = StateNotifierProvider<ColorPreferencesNotifier, Map<String, Color>>((ref) {
+  final notifier = ColorPreferencesNotifier();
+  notifier.loadPreferences();
+  return notifier;
+});
+
+// Adaptive Color Providers
+final adaptiveColorProvider = Provider.family<Color, String>((ref, colorKey) {
+  final isDark = ref.watch(isDarkModeProvider);
+  final preferences = ref.watch(colorPreferencesProvider);
+  
+  // Return custom color if set, otherwise return theme defaults
+  if (preferences.containsKey(colorKey)) {
+    return preferences[colorKey]!;
   }
   
-  LinearGradient getGradient(int index) {
-    return gradients[index % gradients.length];
+  // Return default theme colors based on current mode
+  switch (colorKey) {
+    case 'primary':
+      return isDark ? const Color(0xFF4FC3F7) : const Color(0xFF1976D2);
+    case 'surface':
+      return isDark ? const Color(0xFF1E2139) : const Color(0xFFFFFFFF);
+    case 'background':
+      return isDark ? const Color(0xFF0A0E27) : const Color(0xFFF8F9FA);
+    default:
+      return isDark ? const Color(0xFF4FC3F7) : const Color(0xFF1976D2);
   }
+});
+
+// Focus Mode Theme Provider
+class FocusModeNotifier extends StateNotifier<bool> {
+  FocusModeNotifier() : super(false);
+
+  void enableFocusMode() {
+    state = true;
+  }
+
+  void disableFocusMode() {
+    state = false;
+  }
+
+  void toggleFocusMode() {
+    state = !state;
+  }
+}
+
+final focusModeProvider = StateNotifierProvider<FocusModeNotifier, bool>((ref) {
+  return FocusModeNotifier();
+});
+
+// Theme Constants for quick access
+class ThemeConstants {
+  static const double cardElevation = 0.0;
+  static const double buttonElevation = 0.0;
+  static const double modalElevation = 8.0;
+  
+  static const Duration animationDuration = Duration(milliseconds: 300);
+  static const Duration shortAnimationDuration = Duration(milliseconds: 200);
+  static const Duration longAnimationDuration = Duration(milliseconds: 500);
+  
+  static const double borderRadiusSmall = 8.0;
+  static const double borderRadiusMedium = 12.0;
+  static const double borderRadiusLarge = 16.0;
+  static const double borderRadiusXLarge = 24.0;
+  
+  static const EdgeInsets paddingSmall = EdgeInsets.all(8.0);
+  static const EdgeInsets paddingMedium = EdgeInsets.all(16.0);
+  static const EdgeInsets paddingLarge = EdgeInsets.all(24.0);
+  
+  static const EdgeInsets marginSmall = EdgeInsets.all(4.0);
+  static const EdgeInsets marginMedium = EdgeInsets.all(8.0);
+  static const EdgeInsets marginLarge = EdgeInsets.all(16.0);
 }

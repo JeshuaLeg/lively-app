@@ -18,7 +18,8 @@ class AppConstants {
   static const String onboardingRoute = '/onboarding';
   static const String authRoute = '/auth';
   static const String homeRoute = '/home';
-  static const String focusRoute = '/focus';
+  static const String blocksRoute = '/blocks';  // New route for focus sessions and app blocking
+  static const String focusRoute = '/focus';  // Keep for backward compatibility
   static const String statisticsRoute = '/statistics';
   static const String settingsRoute = '/settings';
   static const String profileRoute = '/profile';
@@ -45,163 +46,101 @@ class AppConstants {
   static const String timeoutDifficulty = 'timeout';
   static const String deepFocusDifficulty = 'deep_focus';
   
-  // App Categories
-  static const List<String> socialMediaApps = [
-    'Instagram',
-    'Facebook',
-    'Twitter',
-    'TikTok',
-    'Snapchat',
-    'LinkedIn',
-    'Reddit',
-    'Discord',
-    'WhatsApp',
-    'Telegram',
-  ];
-  
-  static const List<String> entertainmentApps = [
-    'YouTube',
-    'Netflix',
-    'Disney+',
-    'Hulu',
-    'Amazon Prime Video',
-    'Spotify',
-    'Apple Music',
-    'Twitch',
-    'Tubi',
-    'Crunchyroll',
-  ];
-  
-  static const List<String> gamesApps = [
-    'Call of Duty',
-    'Fortnite',
-    'PUBG',
-    'Candy Crush',
-    'Clash of Clans',
-    'Among Us',
-    'Minecraft',
-    'Roblox',
-    'Pokemon GO',
-    'Clash Royale',
-  ];
-  
-  static const List<String> newsApps = [
-    'BBC News',
-    'CNN',
-    'The Guardian',
-    'The New York Times',
-    'Reuters',
-    'Associated Press',
-    'Fox News',
-    'NPR',
-    'Wall Street Journal',
-    'Washington Post',
-  ];
-  
-  static const List<String> shoppingApps = [
-    'Amazon',
-    'eBay',
-    'Walmart',
-    'Target',
-    'Best Buy',
-    'Etsy',
-    'Alibaba',
-    'Wish',
-    'Shopify',
-    'Mercado Libre',
-  ];
-  
-  // Focus Quotes
-  static const List<String> focusQuotes = [
-    "The successful warrior is the average man with laser-like focus.",
-    "Focus is not about saying yes, it's about saying no.",
-    "Where attention goes, energy flows.",
-    "Concentration is the secret of strength.",
-    "The art of being wise is knowing what to overlook.",
-    "Focus on being productive instead of being busy.",
-    "Your focus determines your reality.",
-    "The ability to focus and to concentrate is among the most important abilities.",
-    "Concentrate all your thoughts upon the work at hand.",
-    "The successful person has the habit of doing the things failures don't like to do.",
-  ];
-  
-  // Notification Messages
-  static const List<String> sessionStartMessages = [
-    "Focus session started! 🎯",
-    "Time to focus! Let's do this! 💪",
-    "Focus mode activated! 🚀",
-    "You've got this! Stay focused! ✨",
-    "Focus time! Make it count! 🔥",
-  ];
-  
-  static const List<String> sessionEndMessages = [
-    "Great job! Session completed! 🎉",
-    "Amazing focus! Well done! 👏",
-    "Focus session complete! You did it! ✅",
-    "Excellent work! Keep it up! 🌟",
-    "Another successful session! 🎯",
-  ];
-  
   // Achievement Types
-  static const String dailyStreak = 'daily_streak';
-  static const String weeklyStreak = 'weekly_streak';
-  static const String monthlyStreak = 'monthly_streak';
-  static const String totalFocusTime = 'total_focus_time';
-  static const String sessionsCompleted = 'sessions_completed';
-  static const String deepFocusAchievement = 'deep_focus_achievement';
-  static const String earlyAdopter = 'early_adopter';
-  static const String inviteFreinds = 'invite_friends';
+  static const String streakAchievement = 'streak';
+  static const String timeAchievement = 'time';
+  static const String sessionAchievement = 'session';
+  static const String specialAchievement = 'special';
   
-  // Time Constants
-  static const int minSessionDuration = 5; // minutes
-  static const int maxSessionDuration = 480; // 8 hours
-  static const int defaultSessionDuration = 25; // minutes
-  static const int shortBreakDuration = 5; // minutes
-  static const int longBreakDuration = 15; // minutes
-  static const int defaultDailyGoal = 120; // minutes
-  static const int defaultWeeklyGoal = 840; // minutes (2 hours * 7 days)
+  // Achievement Rarities (matching Opal's gem system)
+  static const String commonRarity = 'common';
+  static const String rareRarity = 'rare';
+  static const String epicRarity = 'epic';
+  static const String legendaryRarity = 'legendary';
+  static const String mythicalRarity = 'mythical';
   
-  // Colors for categories
-  static const Map<String, int> categoryColors = {
-    'Social Media': 0xFF6B73FF,
-    'Entertainment': 0xFF9B59B6,
-    'Games': 0xFFFF6B9D,
-    'News': 0xFF2ECC71,
-    'Shopping': 0xFFF39C12,
-    'Productivity': 0xFF3498DB,
-    'Education': 0xFFE74C3C,
-    'Health': 0xFF1ABC9C,
-    'Finance': 0xFFE67E22,
-    'Travel': 0xFF9C88FF,
-  };
+  // Notification Types
+  static const String sessionStartNotification = 'session_start';
+  static const String sessionEndNotification = 'session_end';
+  static const String breakReminderNotification = 'break_reminder';
+  static const String dailyGoalNotification = 'daily_goal';
+  static const String achievementUnlockedNotification = 'achievement_unlocked';
   
-  // API Configuration
-  static const String baseUrl = 'https://api.lively.app';
-  static const int requestTimeout = 30000; // 30 seconds
-  static const int maxRetries = 3;
+  // App Usage Categories
+  static const String productiveCategory = 'productive';
+  static const String distractingCategory = 'distracting';
+  static const String neutralCategory = 'neutral';
+  static const String blockedCategory = 'blocked';
   
-  // Analytics Events
-  static const String sessionStartedEvent = 'session_started';
-  static const String sessionCompletedEvent = 'session_completed';
-  static const String sessionCancelledEvent = 'session_cancelled';
-  static const String appBlockedEvent = 'app_blocked';
-  static const String achievementUnlockedEvent = 'achievement_unlocked';
-  static const String userRegisteredEvent = 'user_registered';
-  static const String userLoginEvent = 'user_login';
-  static const String settingsChangedEvent = 'settings_changed';
+  // Time Periods
+  static const String todayPeriod = 'today';
+  static const String weekPeriod = 'week';
+  static const String monthPeriod = 'month';
+  static const String yearPeriod = 'year';
+  static const String allTimePeriod = 'all_time';
+  
+  // Focus Session States
+  static const String activeFocusState = 'active';
+  static const String pausedFocusState = 'paused';
+  static const String completedFocusState = 'completed';
+  static const String cancelledFocusState = 'cancelled';
+  
+  // Default Values
+  static const int defaultFocusMinutes = 25;
+  static const int defaultBreakMinutes = 5;
+  static const int defaultLongBreakMinutes = 15;
+  static const int defaultDailyGoalMinutes = 120;
+  static const int defaultWeeklyGoalMinutes = 840;
+  
+  // Gem/Crystal System (matching Opal's visual style)
+  static const String opalGem = 'opal';
+  static const String sapphireGem = 'sapphire';
+  static const String emeraldGem = 'emerald';
+  static const String rubyGem = 'ruby';
+  static const String diamondGem = 'diamond';
+  static const String amethystGem = 'amethyst';
+  static const String topazGem = 'topaz';
+  static const String quartzGem = 'quartz';
+  static const String peridotGem = 'peridot';
+  static const String garnetGem = 'garnet';
+  
+  // Focus Timer Backgrounds (matching Opal's galaxy themes)
+  static const String galaxyBackground = 'galaxy';
+  static const String nebulaBackground = 'nebula';
+  static const String starsBackground = 'stars';
+  static const String cosmicBackground = 'cosmic';
+  static const String auroraBackground = 'aurora';
+  
+  // Social Features
+  static const String friendsFeature = 'friends';
+  static const String leaderboardFeature = 'leaderboard';
+  static const String sharingFeature = 'sharing';
+  static const String challengesFeature = 'challenges';
   
   // Error Messages
-  static const String genericError = 'Something went wrong. Please try again.';
-  static const String networkError = 'Network connection error. Please check your internet connection.';
-  static const String authError = 'Authentication failed. Please try again.';
-  static const String permissionDeniedError = 'Permission denied. Please grant the required permissions.';
-  static const String sessionActiveError = 'Another session is already active.';
-  static const String noDataError = 'No data available.';
+  static const String networkErrorMessage = 'Please check your internet connection';
+  static const String genericErrorMessage = 'Something went wrong. Please try again';
+  static const String authErrorMessage = 'Authentication failed. Please try again';
+  static const String permissionErrorMessage = 'Permission required to continue';
   
   // Success Messages
-  static const String sessionCreatedSuccess = 'Focus session created successfully!';
-  static const String sessionCompletedSuccess = 'Congratulations! Session completed successfully!';
-  static const String settingsSavedSuccess = 'Settings saved successfully!';
-  static const String profileUpdatedSuccess = 'Profile updated successfully!';
-  static const String achievementUnlockedSuccess = 'Achievement unlocked! 🎉';
+  static const String sessionCompletedMessage = 'Focus session completed!';
+  static const String achievementUnlockedMessage = 'Achievement unlocked!';
+  static const String goalReachedMessage = 'Goal reached!';
+  static const String streakMaintainedMessage = 'Streak maintained!';
+  
+  // API Endpoints (if needed for future integrations)
+  static const String baseApiUrl = 'https://api.lively.app';
+  static const String authEndpoint = '/auth';
+  static const String userEndpoint = '/user';
+  static const String sessionsEndpoint = '/sessions';
+  static const String achievementsEndpoint = '/achievements';
+  static const String leaderboardEndpoint = '/leaderboard';
+  
+  // Feature Flags
+  static const String socialFeaturesEnabled = 'social_features_enabled';
+  static const String analyticsEnabled = 'analytics_enabled';
+  static const String notificationsEnabled = 'notifications_enabled';
+  static const String crashReportingEnabled = 'crash_reporting_enabled';
+  static const String betaFeaturesEnabled = 'beta_features_enabled';
 }

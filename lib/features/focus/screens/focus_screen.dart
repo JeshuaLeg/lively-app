@@ -5,252 +5,62 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/navigation/app_router.dart';
 
-class FocusScreen extends ConsumerWidget {
+class FocusScreen extends ConsumerStatefulWidget {
   const FocusScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Focus'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Current Session Status
-            _buildCurrentSessionCard(context),
-            const SizedBox(height: 24),
-            
-            // Quick Start Options
-            _buildQuickStartSection(context),
-            const SizedBox(height: 24),
-            
-            // Scheduled Sessions
-            _buildScheduledSessionsSection(context),
-            const SizedBox(height: 24),
-            
-            // Focus Statistics
-            _buildFocusStatsSection(context),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 1,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go(AppConstants.homeRoute);
-              break;
-            case 1:
-              context.go(AppConstants.focusRoute);
-              break;
-            case 2:
-              context.go(AppConstants.statisticsRoute);
-              break;
-            case 3:
-              context.go(AppConstants.settingsRoute);
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.timer),
-            label: 'Focus',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Stats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
-    );
+  ConsumerState<FocusScreen> createState() => _FocusScreenState();
+}
+
+class _FocusScreenState extends ConsumerState<FocusScreen>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
+  bool _hasActiveSession = true; // Simulating an active Focus Fiesta session
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
-  Widget _buildCurrentSessionCard(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            // Timer Display
-            Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppTheme.primaryColor,
-                  width: 8,
-                ),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF0A0E27),
+              Color(0xFF1A1D3A),
+              Color(0xFF0A0E27),
+            ],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              _buildTabBar(),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
                   children: [
-                    Text(
-                      '25:00',
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Ready to Focus',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                      ),
-                    ),
+                    _buildScheduleTab(),
+                    _buildLimitsTab(),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-            
-            // Start Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Start focus session
-                  context.pushSessionTimer('demo-session');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: const Text(
-                  'Start Focus Session',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickStartSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Quick Start',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildQuickStartCard(
-                context,
-                duration: '25 min',
-                label: 'Pomodoro',
-                color: AppTheme.primaryColor,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Starting 25-minute Pomodoro session')),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildQuickStartCard(
-                context,
-                duration: '45 min',
-                label: 'Deep Work',
-                color: AppTheme.secondaryColor,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Starting 45-minute Deep Work session')),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildQuickStartCard(
-                context,
-                duration: '90 min',
-                label: 'Flow State',
-                color: AppTheme.accentColor,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Starting 90-minute Flow State session')),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickStartCard(
-    BuildContext context, {
-    required String duration,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.timer,
-                  color: color,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                duration,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
+              if (_hasActiveSession) _buildActiveSessionBar(),
+              const SizedBox(height: 80), // Space for bottom nav
             ],
           ),
         ),
@@ -258,130 +68,639 @@ class FocusScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildScheduledSessionsSection(BuildContext context) {
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Blocks',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.softWhite,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              context.push(AppConstants.settingsRoute);
+            },
+            icon: const Icon(
+              Icons.settings,
+              color: AppTheme.softWhite,
+              size: 24,
+            ),
+            style: IconButton.styleFrom(
+              backgroundColor: AppTheme.cardBackground,
+              shape: const CircleBorder(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          color: AppTheme.softWhite,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        indicatorPadding: const EdgeInsets.all(4),
+        labelColor: AppTheme.primaryNavy,
+        unselectedLabelColor: AppTheme.mutedGray,
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+        ),
+        tabs: const [
+          Tab(
+            icon: Icon(Icons.schedule, size: 20),
+            text: 'Schedule',
+          ),
+          Tab(
+            icon: Icon(Icons.block, size: 20),
+            text: 'Limits',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScheduleTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_hasActiveSession) _buildActiveFocusCard(),
+          const SizedBox(height: 24),
+          _buildScheduledSessions(),
+          const SizedBox(height: 24),
+          _buildCreateScheduleCard(),
+          const SizedBox(height: 24),
+          _buildReloadBlocksOption(),
+          const SizedBox(height: 24),
+          _buildGetMoreDoneSection(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLimitsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'App Limits',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppTheme.softWhite,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildAppLimitCard('Social Media', '1h 30m', Colors.blue),
+          _buildAppLimitCard('Entertainment', '2h 0m', Colors.purple),
+          _buildAppLimitCard('Games', '30m', Colors.orange),
+          const SizedBox(height: 24),
+          _buildAddLimitButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActiveFocusCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.gemBlue.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFFD700), Color(0xFFFF8C00)],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  '⚡',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '🎉 Focus Fiesta',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppTheme.softWhite,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Remaining 0:19:42',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.mutedGray,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: AppTheme.mutedGray,
+                size: 16,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.gemTeal.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: AppTheme.gemTeal,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Blocking',
+                      style: TextStyle(
+                        color: AppTheme.gemTeal,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.gemPink.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildSmallAppIcon(Icons.tiktok, Colors.black),
+                    const SizedBox(width: 2),
+                    _buildSmallAppIcon(Icons.discord, Colors.purple),
+                    const SizedBox(width: 2),
+                    _buildSmallAppIcon(Icons.download, Colors.orange),
+                    const SizedBox(width: 4),
+                    Text(
+                      '+1',
+                      style: TextStyle(
+                        color: AppTheme.softWhite,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallAppIcon(IconData icon, Color color) {
+    return Container(
+      width: 16,
+      height: 16,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Icon(
+        icon,
+        color: Colors.white,
+        size: 10,
+      ),
+    );
+  }
+
+  Widget _buildScheduledSessions() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Scheduled Sessions',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                context.push(AppConstants.createSessionRoute);
-              },
-              child: const Text('Create New'),
-            ),
-          ],
+        _buildScheduledSessionCard(
+          '💻 Work Time',
+          'Weekdays, 9:00 AM - 5:00 PM',
+          'Starting Monday',
+          Icons.laptop_mac,
         ),
         const SizedBox(height: 16),
-        ...List.generate(2, (index) => _buildScheduledSessionItem(context, index)),
+        _buildScheduledSessionCard(
+          '💎 Family time',
+          'Weekdays, 6:00 PM - 7:00 PM',
+          'Starting Monday',
+          Icons.diamond,
+        ),
       ],
     );
   }
 
-  Widget _buildScheduledSessionItem(BuildContext context, int index) {
-    final sessions = [
-      {
-        'title': 'Morning Deep Work',
-        'time': '9:00 AM - 10:30 AM',
-        'status': 'Upcoming',
-        'color': AppTheme.primaryColor,
-      },
-      {
-        'title': 'Afternoon Study',
-        'time': '2:00 PM - 3:00 PM',
-        'status': 'Scheduled',
-        'color': AppTheme.secondaryColor,
-      },
-    ];
-
-    final session = sessions[index];
-
-    return Card(
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: (session['color'] as Color).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildScheduledSessionCard(
+    String title,
+    String schedule,
+    String startInfo,
+    IconData icon,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.accentBlue,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: AppTheme.softWhite,
+              size: 24,
+            ),
           ),
-          child: Icon(
-            Icons.schedule,
-            color: session['color'] as Color,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppTheme.softWhite,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  schedule,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.mutedGray,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentBlue.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.schedule,
+                        size: 12,
+                        color: AppTheme.mutedGray,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        startInfo,
+                        style: TextStyle(
+                          color: AppTheme.mutedGray,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
+          const Icon(
+            Icons.arrow_forward_ios,
+            color: AppTheme.mutedGray,
+            size: 16,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCreateScheduleCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.mutedGray.withOpacity(0.2),
+          width: 1,
+          style: BorderStyle.solid,
         ),
-        title: Text(session['title']! as String),
-        subtitle: Text(session['time']! as String),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: (session['color'] as Color).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.accentBlue,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.add,
+              color: AppTheme.softWhite,
+              size: 32,
+            ),
           ),
-          child: Text(
-            session['status']! as String,
-            style: TextStyle(
-              color: session['color'] as Color,
-              fontSize: 12,
+          const SizedBox(height: 16),
+          Text(
+            'Create Schedule',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: AppTheme.softWhite,
               fontWeight: FontWeight.w600,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReloadBlocksOption() {
+    return Row(
+      children: [
+        Text(
+          'Have an issue?',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppTheme.mutedGray,
+          ),
+        ),
+        const SizedBox(width: 8),
+        GestureDetector(
+          onTap: () {
+            // Handle reload blocks
+          },
+          child: Row(
+            children: [
+              Icon(
+                Icons.refresh,
+                color: AppTheme.gemBlue,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Reload Blocks',
+                style: TextStyle(
+                  color: AppTheme.gemBlue,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGetMoreDoneSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Get More Done',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: AppTheme.softWhite,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Add similar cards as in home screen but simplified for blocks context
+        Text(
+          'Create focused work sessions and block distracting apps to maximize your productivity.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppTheme.mutedGray,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppLimitCard(String category, String limit, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.apps,
+              color: color,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  category,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: AppTheme.softWhite,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Daily limit: $limit',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppTheme.mutedGray,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: true,
+            onChanged: (value) {
+              // Handle switch toggle
+            },
+            activeColor: AppTheme.gemBlue,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddLimitButton() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: AppTheme.gemGradient,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ElevatedButton(
+        onPressed: () {
+          // Handle add limit
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.add, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              'Add App Limit',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildFocusStatsSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Focus Statistics',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+  Widget _buildActiveSessionBar() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF26C6DA),
+            Color(0xFF00BCD4),
+          ],
         ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildStatItem(context, '15', 'Sessions\nToday'),
-                _buildStatItem(context, '3h 45m', 'Total\nFocus Time'),
-                _buildStatItem(context, '92%', 'Success\nRate'),
-              ],
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                '🎉',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Focus Fiesta',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    '⏰ 4 • 19:43',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(
+                    Icons.pause,
+                    color: Color(0xFF26C6DA),
+                    size: 16,
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    'Break',
+                    style: TextStyle(
+                      color: Color(0xFF26C6DA),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildStatItem(BuildContext context, String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall,
-          textAlign: TextAlign.center,
-        ),
-      ],
+      ),
     );
   }
 }
